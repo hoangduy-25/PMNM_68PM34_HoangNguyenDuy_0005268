@@ -1,10 +1,9 @@
 <?php
 class home{
     public function index(){
-        echo "Đây là trang chủ";
+        require_once "../app/views/home/index.php";
     }
-
-    public function insert(){
-        echo "Trang thêm sinh viên";
+    public function login(){
+        require_once "../app/views/home/login.php";
     }
 }

@@ -29,6 +29,27 @@ class sinhvien extends Controller{
         }
     }
 
+    public function edit($id){
+        $sinhvienModel = $this->model('sinhvienModel');
+        $sinhvien = $sinhvienModel->getById($id);
+        $this->view('sinhvien/edit', ['sinhvien' => $sinhvien]);
+    }
+
+    public function update($id){
+        if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST'){
+            $hoten = $_POST['hoten'] ??'';
+            $gioitinh = $_POST['gioitinh'] ??'';
+            $mssv = $_POST['mssv'] ??'';
+            $sinhvienModel = $this->model('sinhvienModel');
+            $result = $sinhvienModel->update($id, $hoten, $gioitinh, $mssv);
+            if($result){
+                echo "Cập nhật thành công";
+            }else{
+                echo "Cập nhật thất bại";
+            }
+        }
+    }
+
     
 }
 ?>

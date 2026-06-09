@@ -44,7 +44,7 @@
         </tr>
         <?php foreach ($sinhviens as $index => $sinhvien): ?>
             <tr>
-                <td><?php echo $index + 1; ?></td>
+                <td><?php echo $sinhvien['id']; ?></td>
                 <td><?php echo $sinhvien['hoten']; ?></td>
                 <td><?php echo $sinhvien['mssv']; ?></td>
                 <td><?php echo $sinhvien['gioitinh']; ?></td>

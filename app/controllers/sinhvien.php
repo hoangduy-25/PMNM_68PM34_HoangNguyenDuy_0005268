@@ -50,6 +50,14 @@ class sinhvien extends Controller{
         }
     }
 
-    
+    public function delete($id){
+        $sinhvienModel = $this->model('sinhvienModel');
+        $result = $sinhvienModel->delete($id);
+        if($result){
+            echo "Xóa thành công";
+        }else{
+            echo "Xóa thất bại";
+        }
+    }
 }
 ?>

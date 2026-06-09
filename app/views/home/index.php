@@ -7,6 +7,7 @@
 </head>
 <body>
     <h1>Chào mừng đến với trang chủ</h1>
+    <a href="/sinhvien/index/">Trang sinh viên</a><br>
     <a href="/auth/logout/">Đăng xuất</a>
 </body>
 </html>

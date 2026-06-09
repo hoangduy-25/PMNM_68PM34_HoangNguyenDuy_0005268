@@ -2,10 +2,12 @@
 require_once '../app/core/controller.php';
 class sinhvien extends Controller{
 
-    public function index(){
+    public function index($limit = 5, $offset = 0, $search=""){
         $sinhvienModel = $this->model('sinhvienModel');
-        $sinhviens = $sinhvienModel->getAllSinhvien();
-        $this->view('layout/masterlayout', ['viewname' => 'sinhvien/index', 'sinhviens' => $sinhviens, 'title' => 'Danh sách sinh viên']);
+        $result = $sinhvienModel->paging($limit, $offset, $search);
+        $sinhviens = $result['sinhviens'];
+        $totalpage = $result['totalpage'];
+        $this->view('layout/masterlayout', ['viewname' => 'sinhvien/index', 'sinhviens' => $sinhviens, 'title' => 'Danh sách sinh viên', 'totalpage'=>$totalpage]);
     }
 
     public function create(){
@@ -26,5 +28,7 @@ class sinhvien extends Controller{
             }
         }
     }
+
+    
 }
 ?>

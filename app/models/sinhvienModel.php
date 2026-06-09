@@ -26,5 +26,30 @@ class SinhvienModel{
             return false;
         }
     }
+
+    public function paging($limit = 5, $offset = 0, $search = ""){
+        $query = "SELECT * FROM tbl_sinhviens LIMIT :limit OFFSET :offset";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+        /*
+        $query = "SELECT * FROM tbl_sinhviens LIMIT ? OFFSET ?";
+        $stmt->bindParam('ss', $limit, $offset);
+        */
+
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        //Tinh tong so ban ghi
+        $selectAllQuery = $this->conn->query("SELECT COUNT(*) FROM tbl_sinhviens");
+        $totalRecord = $selectAllQuery->fetchColumn();
+
+        $totalPage = ceil($totalRecord/$limit);
+
+        return ["sinhviens"=>$result, "totalpage"=>$totalPage];
+    }
+
+    
 }
 ?>

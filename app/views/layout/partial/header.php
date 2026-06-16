@@ -1,29 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $title; ?></title>
-    <style>
-        .header{
-            width: 100%;
-            height: 80px;
-            background-color: red;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-        <div class="container-fluid">
-            <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link active" href="/sinhvien">Quản lý sinh viên</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/lophoc">Quản lý lớp học</a>
-            </li>
+<?php
+$currentUrl = $_GET['url'] ?? '';
+
+$isSinhVien = strpos($currentUrl, 'sinhvien') === 0;
+$isLop = strpos($currentUrl, 'lop') === 0;
+?>
+
+<nav class="navbar navbar-expand-lg app-navbar sticky-top">
+    <div class="container-fluid app-shell">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="/home/index/">
+            <span class="brand-mark">SV</span>
+            <span>Student Manager</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                <li class="nav-item">
+                    <a class="nav-link <?php echo $isSinhVien ? 'active' : ''; ?>" href="/sinhvien/index/">
+                        Quản lý sinh viên
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link <?php echo $isLop ? 'active' : ''; ?>" href="/lop/index/">
+                        Quản lý lớp học
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="btn btn-outline-primary ms-lg-2" href="/auth/logout/">
+                        Đăng xuất
+                    </a>
+                </li>
             </ul>
         </div>
-    </nav>
-</body>
-</html>
+    </div>
+</nav>

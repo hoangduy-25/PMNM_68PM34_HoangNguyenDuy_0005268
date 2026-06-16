@@ -32,25 +32,11 @@ class lop extends Controller{
         ]);
     }
 
-    public function create($malop, $tenlop, $ghichu){
-        try {
-            $query = "INSERT INTO tbl_lops(malop, tenlop, ghichu) VALUES(:malop, :tenlop, :ghichu)";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':malop', $malop);
-            $stmt->bindParam(':tenlop', $tenlop);
-            $stmt->bindParam(':ghichu', $ghichu);
-
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            if ($e->getCode() == 23000) {
-                return "duplicate_malop";
-            }
-
-            return false;
-        }
+    public function create(){
+        $this->view('lop/create');
     }
 
-   public function store(){
+    public function store(){
         if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST'){
             $malop = trim($_POST['malop'] ?? '');
             $tenlop = trim($_POST['tenlop'] ?? '');

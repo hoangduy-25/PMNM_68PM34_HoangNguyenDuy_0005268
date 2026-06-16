@@ -8,14 +8,19 @@ class LopModel{
     }
 
     public function create($malop, $tenlop, $ghichu){
-        $query = "INSERT INTO tbl_lops(malop, tenlop, ghichu) VALUES(:malop, :tenlop, :ghichu)";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':malop', $malop);
-        $stmt->bindParam(':tenlop', $tenlop);
-        $stmt->bindParam(':ghichu', $ghichu);
-        if($stmt->execute()){
-            return true;
-        }else{
+        try {
+            $query = "INSERT INTO tbl_lops(malop, tenlop, ghichu) VALUES(:malop, :tenlop, :ghichu)";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':malop', $malop);
+            $stmt->bindParam(':tenlop', $tenlop);
+            $stmt->bindParam(':ghichu', $ghichu);
+
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            if ($e->getCode() == 23000) {
+                return "duplicate_malop";
+            }
+
             return false;
         }
     }

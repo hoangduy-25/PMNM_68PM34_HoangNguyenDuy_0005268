@@ -11,6 +11,20 @@
         </div>
     </div>
 
+    <form class="mb-4" action="/lop/index/5/0" method="get">
+        <div class="input-group">
+            <input
+                class="form-control"
+                type="text"
+                name="search"
+                placeholder="Tìm theo mã lớp, tên lớp hoặc ghi chú..."
+                value="<?php echo htmlspecialchars($search ?? ''); ?>"
+            >
+            <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+            <a class="btn btn-outline-secondary" href="/lop/index/">Làm mới</a>
+        </div>
+    </form>
+
     <div class="soft-card table-card">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -83,7 +97,7 @@
                     $activeClass = ($i == $currentPage) ? 'active' : '';
                 ?>
                     <li class="page-item <?php echo $activeClass; ?>">
-                        <a class="page-link" href="/lop/index/<?php echo $pageSize; ?>/<?php echo $pageOffset; ?>">
+                       <a class="page-link" href="/lop/index/<?php echo $pageSize; ?>/<?php echo $pageOffset; ?>?search=<?php echo urlencode($search ?? ''); ?>">
                             <?php echo $i; ?>
                         </a>
                     </li>

@@ -29,30 +29,57 @@ class SinhvienModel{
     }
 
     public function paging($limit = 5, $offset = 0, $search = ""){
+        $where = "";
+        $searchValue = "%" . $search . "%";
+
+        if (!empty($search)) {
+            $where = "WHERE sv.hoten LIKE :search 
+                    OR sv.mssv LIKE :search 
+                    OR sv.malop LIKE :search 
+                    OR l.tenlop LIKE :search";
+        }
+
         $query = "
-            SELECT 
-                sv.*,
-                l.tenlop
+            SELECT sv.*, l.tenlop
             FROM tbl_sinhviens sv
             LEFT JOIN tbl_lops l ON sv.malop = l.malop
+            $where
             LIMIT :limit OFFSET :offset
         ";
 
         $stmt = $this->conn->prepare($query);
+
+        if (!empty($search)) {
+            $stmt->bindParam(':search', $searchValue);
+        }
+
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $selectAllQuery = $this->conn->query("SELECT COUNT(*) FROM tbl_sinhviens");
-        $totalRecord = $selectAllQuery->fetchColumn();
+        $countQuery = "
+            SELECT COUNT(*)
+            FROM tbl_sinhviens sv
+            LEFT JOIN tbl_lops l ON sv.malop = l.malop
+            $where
+        ";
+
+        $countStmt = $this->conn->prepare($countQuery);
+
+        if (!empty($search)) {
+            $countStmt->bindParam(':search', $searchValue);
+        }
+
+        $countStmt->execute();
+        $totalRecord = $countStmt->fetchColumn();
 
         $totalPage = ceil($totalRecord / $limit);
 
         return ["sinhviens" => $result, "totalpage" => $totalPage];
     }
-
+    
     public function getById($id){
         $query = "SELECT * FROM tbl_sinhviens WHERE id = :id";
         $stmt = $this->conn->prepare($query);
@@ -85,13 +112,6 @@ class SinhvienModel{
         }else{
             return false;
         }
-    }
-
-    public function getAllLops(){
-        $query = "SELECT malop, tenlop FROM tbl_lops ORDER BY malop ASC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
 }

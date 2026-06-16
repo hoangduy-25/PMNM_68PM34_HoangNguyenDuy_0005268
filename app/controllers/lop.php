@@ -5,6 +5,7 @@ class lop extends Controller{
     public function index($limit = 5, $offset = 0, $search = ""){
         $limit = (int)$limit;
         $offset = (int)$offset;
+        $search = trim($_GET['search'] ?? $search);
 
         if ($limit <= 0) {
             $limit = 5;
@@ -28,7 +29,8 @@ class lop extends Controller{
             'totalpage' => $totalpage,
             'limit' => $limit,
             'offset' => $offset,
-            'currentPage' => $currentPage
+            'currentPage' => $currentPage,
+            'search' => $search
         ]);
     }
 

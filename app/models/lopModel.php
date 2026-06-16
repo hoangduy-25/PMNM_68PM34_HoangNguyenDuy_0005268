@@ -26,20 +26,41 @@ class LopModel{
     }
 
     public function paging($limit = 5, $offset = 0, $search = ""){
-        $query = "SELECT * FROM tbl_lops LIMIT :limit OFFSET :offset";
+        $where = "";
+        $searchValue = "%" . $search . "%";
+
+        if (!empty($search)) {
+            $where = "WHERE malop LIKE :search
+                    OR tenlop LIKE :search
+                    OR ghichu LIKE :search";
+        }
+
+        $query = "SELECT * FROM tbl_lops $where LIMIT :limit OFFSET :offset";
         $stmt = $this->conn->prepare($query);
+
+        if (!empty($search)) {
+            $stmt->bindParam(':search', $searchValue);
+        }
+
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $selectAllQuery = $this->conn->query("SELECT COUNT(*) FROM tbl_lops");
-        $totalRecord = $selectAllQuery->fetchColumn();
+        $countQuery = "SELECT COUNT(*) FROM tbl_lops $where";
+        $countStmt = $this->conn->prepare($countQuery);
 
-        $totalPage = ceil($totalRecord/$limit);
+        if (!empty($search)) {
+            $countStmt->bindParam(':search', $searchValue);
+        }
 
-        return ["lops"=>$result, "totalpage"=>$totalPage];
+        $countStmt->execute();
+        $totalRecord = $countStmt->fetchColumn();
+
+        $totalPage = ceil($totalRecord / $limit);
+
+        return ["lops" => $result, "totalpage" => $totalPage];
     }
 
     public function getById($id){

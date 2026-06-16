@@ -8,6 +8,20 @@
         </div>
     </div>
 
+    <form class="mb-4" action="/sinhvien/index/5/0" method="get">
+                <div class="input-group">
+                    <input
+                        class="form-control"
+                        type="text"
+                        name="search"
+                        placeholder="Tìm theo họ tên, MSSV, mã lớp hoặc tên lớp..."
+                        value="<?php echo htmlspecialchars($search ?? ''); ?>"
+                    >
+                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                    <a class="btn btn-outline-secondary" href="/sinhvien/index/">Làm mới</a>
+                </div>
+            </form>
+
     <div class="soft-card table-card">
         <div class="table-responsive">
             <table class="table table-hover align-middle">

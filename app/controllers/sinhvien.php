@@ -5,6 +5,7 @@ class sinhvien extends Controller{
     public function index($limit = 5, $offset = 0, $search = ""){
         $limit = (int)$limit;
         $offset = (int)$offset;
+        $search = trim($_GET['search'] ?? '');
 
         if ($limit <= 0) {
             $limit = 5;
@@ -28,17 +29,13 @@ class sinhvien extends Controller{
             'totalpage' => $totalpage,
             'limit' => $limit,
             'offset' => $offset,
-            'currentPage' => $currentPage
+            'currentPage' => $currentPage,
+            'search' => $search
         ]);
     }
-
+    
     public function create(){
-        $sinhvienModel = $this->model('sinhvienModel');
-        $lops = $sinhvienModel->getAllLops();
-
-        $this->view('sinhvien/create', [
-            'lops' => $lops
-        ]);
+        $this->view('sinhvien/create');
     }
 
     public function store(){
@@ -59,14 +56,8 @@ class sinhvien extends Controller{
 
     public function edit($id){
         $sinhvienModel = $this->model('sinhvienModel');
-
         $sinhvien = $sinhvienModel->getById($id);
-        $lops = $sinhvienModel->getAllLops();
-
-        $this->view('sinhvien/edit', [
-            'sinhvien' => $sinhvien,
-            'lops' => $lops
-        ]);
+        $this->view('sinhvien/edit', ['sinhvien' => $sinhvien]);
     }
 
     public function update($id){

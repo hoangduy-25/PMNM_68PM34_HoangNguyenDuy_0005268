@@ -14,12 +14,13 @@ class SinhvienModel{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function create($hoten, $gioitinh, $mssv){
-        $query = "INSERT INTO tbl_sinhviens(hoten, gioitinh, mssv) VALUES(:hoten, :gioitinh, :mssv)";
+    public function create($hoten, $gioitinh, $mssv, $malop){
+        $query = "INSERT INTO tbl_sinhviens(hoten, gioitinh, mssv, malop) VALUES(:hoten, :gioitinh, :mssv, :malop)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':hoten', $hoten);
         $stmt->bindParam(':gioitinh', $gioitinh);
         $stmt->bindParam(':mssv', $mssv);
+        $stmt->bindParam(':malop', $malop);
         if($stmt->execute()){
             return true;
         }else{
@@ -28,26 +29,28 @@ class SinhvienModel{
     }
 
     public function paging($limit = 5, $offset = 0, $search = ""){
-        $query = "SELECT * FROM tbl_sinhviens LIMIT :limit OFFSET :offset";
+        $query = "
+            SELECT 
+                sv.*,
+                l.tenlop
+            FROM tbl_sinhviens sv
+            LEFT JOIN tbl_lops l ON sv.malop = l.malop
+            LIMIT :limit OFFSET :offset
+        ";
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-
-        /*
-        $query = "SELECT * FROM tbl_sinhviens LIMIT ? OFFSET ?";
-        $stmt->bindParam('ss', $limit, $offset);
-        */
-
         $stmt->execute();
+
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        //Tinh tong so ban ghi
         $selectAllQuery = $this->conn->query("SELECT COUNT(*) FROM tbl_sinhviens");
         $totalRecord = $selectAllQuery->fetchColumn();
 
-        $totalPage = ceil($totalRecord/$limit);
+        $totalPage = ceil($totalRecord / $limit);
 
-        return ["sinhviens"=>$result, "totalpage"=>$totalPage];
+        return ["sinhviens" => $result, "totalpage" => $totalPage];
     }
 
     public function getById($id){
@@ -58,13 +61,14 @@ class SinhvienModel{
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function update($id, $hoten, $gioitinh, $mssv){
-        $query = "UPDATE tbl_sinhviens SET hoten = :hoten, gioitinh = :gioitinh, mssv = :mssv WHERE id = :id";
+    public function update($id, $hoten, $gioitinh, $mssv, $malop){
+        $query = "UPDATE tbl_sinhviens SET hoten = :hoten, gioitinh = :gioitinh, mssv = :mssv, malop = :malop WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->bindParam(':hoten', $hoten);
         $stmt->bindParam(':gioitinh', $gioitinh);
         $stmt->bindParam(':mssv', $mssv);
+        $stmt->bindParam(':malop', $malop);
         if($stmt->execute()){
             return true;
         }else{
@@ -81,6 +85,13 @@ class SinhvienModel{
         }else{
             return false;
         }
+    }
+
+    public function getAllLops(){
+        $query = "SELECT malop, tenlop FROM tbl_lops ORDER BY malop ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
 }

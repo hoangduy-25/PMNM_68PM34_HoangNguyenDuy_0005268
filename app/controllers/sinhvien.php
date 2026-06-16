@@ -2,16 +2,43 @@
 require_once '../app/core/controller.php';
 class sinhvien extends Controller{
 
-    public function index($limit = 5, $offset = 0, $search=""){
+    public function index($limit = 5, $offset = 0, $search = ""){
+        $limit = (int)$limit;
+        $offset = (int)$offset;
+
+        if ($limit <= 0) {
+            $limit = 5;
+        }
+
+        if ($offset < 0) {
+            $offset = 0;
+        }
+
         $sinhvienModel = $this->model('sinhvienModel');
         $result = $sinhvienModel->paging($limit, $offset, $search);
+
         $sinhviens = $result['sinhviens'];
         $totalpage = $result['totalpage'];
-        $this->view('layout/masterlayout', ['viewname' => 'sinhvien/index', 'sinhviens' => $sinhviens, 'title' => 'Danh sách sinh viên', 'totalpage'=>$totalpage]);
+        $currentPage = floor($offset / $limit) + 1;
+
+        $this->view('layout/masterlayout', [
+            'viewname' => 'sinhvien/index',
+            'sinhviens' => $sinhviens,
+            'title' => 'Danh sách sinh viên',
+            'totalpage' => $totalpage,
+            'limit' => $limit,
+            'offset' => $offset,
+            'currentPage' => $currentPage
+        ]);
     }
 
     public function create(){
-        $this->view('sinhvien/create');
+        $sinhvienModel = $this->model('sinhvienModel');
+        $lops = $sinhvienModel->getAllLops();
+
+        $this->view('sinhvien/create', [
+            'lops' => $lops
+        ]);
     }
 
     public function store(){
@@ -19,8 +46,9 @@ class sinhvien extends Controller{
             $hoten = $_POST['hoten'] ??'';
             $gioitinh = $_POST['gioitinh'] ??'';
             $mssv = $_POST['mssv'] ??'';
+            $malop = $_POST['malop'] ??'';
             $sinhvienModel = $this->model('sinhvienModel');
-            $result = $sinhvienModel->create($hoten, $gioitinh, $mssv);
+            $result = $sinhvienModel->create($hoten, $gioitinh, $mssv, $malop);
             if($result){
                 echo "Thêm mới thành công";
             }else{
@@ -31,8 +59,14 @@ class sinhvien extends Controller{
 
     public function edit($id){
         $sinhvienModel = $this->model('sinhvienModel');
+
         $sinhvien = $sinhvienModel->getById($id);
-        $this->view('sinhvien/edit', ['sinhvien' => $sinhvien]);
+        $lops = $sinhvienModel->getAllLops();
+
+        $this->view('sinhvien/edit', [
+            'sinhvien' => $sinhvien,
+            'lops' => $lops
+        ]);
     }
 
     public function update($id){
@@ -40,8 +74,9 @@ class sinhvien extends Controller{
             $hoten = $_POST['hoten'] ??'';
             $gioitinh = $_POST['gioitinh'] ??'';
             $mssv = $_POST['mssv'] ??'';
+            $malop = $_POST['malop'] ??'';
             $sinhvienModel = $this->model('sinhvienModel');
-            $result = $sinhvienModel->update($id, $hoten, $gioitinh, $mssv);
+            $result = $sinhvienModel->update($id, $hoten, $gioitinh, $mssv, $malop);
             if($result){
                 echo "Cập nhật thành công";
             }else{

@@ -6,34 +6,28 @@ class lop extends Controller{
         $limit = (int)$limit;
         $offset = (int)$offset;
         $search = trim($_GET['search'] ?? $search);
+        $sort = $_GET['sort'] ?? 'id';
+        $dir = $_GET['dir'] ?? 'ASC';
 
-        if ($limit <= 0) {
-            $limit = 5;
-        }
-
-        if ($offset < 0) {
-            $offset = 0;
-        }
+        if ($limit <= 0) $limit = 5;
+        if ($offset < 0) $offset = 0;
 
         $lopModel = $this->model('lopModel');
-        $result = $lopModel->paging($limit, $offset, $search);
-
-        $lops = $result['lops'];
-        $totalpage = $result['totalpage'];
-        $currentPage = floor($offset / $limit) + 1;
+        $result = $lopModel->paging($limit, $offset, $search, $sort, $dir);
 
         $this->view('layout/masterlayout', [
             'viewname' => 'lop/index',
-            'lops' => $lops,
+            'lops' => $result['lops'],
             'title' => 'Danh sách lớp',
-            'totalpage' => $totalpage,
+            'totalpage' => $result['totalpage'],
             'limit' => $limit,
             'offset' => $offset,
-            'currentPage' => $currentPage,
-            'search' => $search
+            'currentPage' => floor($offset / $limit) + 1,
+            'search' => $search,
+            'sort' => $sort,
+            'dir' => $dir
         ]);
     }
-
     public function create(){
         $this->view('lop/create');
     }

@@ -28,56 +28,67 @@ class SinhvienModel{
         }
     }
 
-    public function paging($limit = 5, $offset = 0, $search = ""){
-        $where = "";
-        $searchValue = "%" . $search . "%";
+    public function paging($limit = 5, $offset = 0, $search = "", $sort = "id", $dir = "ASC"){
+    $where = "";
+    $searchValue = "%" . $search . "%";
 
-        if (!empty($search)) {
-            $where = "WHERE sv.hoten LIKE :search 
-                    OR sv.mssv LIKE :search 
-                    OR sv.malop LIKE :search 
-                    OR l.tenlop LIKE :search";
-        }
+    $allowedSort = [
+        "id" => "sv.id",
+        "mssv" => "sv.mssv",
+        "hoten" => "sv.hoten"
+    ];
 
-        $query = "
-            SELECT sv.*, l.tenlop
-            FROM tbl_sinhviens sv
-            LEFT JOIN tbl_lops l ON sv.malop = l.malop
-            $where
-            LIMIT :limit OFFSET :offset
-        ";
+    $orderBy = $allowedSort[$sort] ?? "sv.id";
+    $dir = strtoupper($dir) === "DESC" ? "DESC" : "ASC";
 
-        $stmt = $this->conn->prepare($query);
+    if (!empty($search)) {
+        $where = "WHERE sv.hoten LIKE :search 
+                  OR sv.mssv LIKE :search 
+                  OR sv.malop LIKE :search 
+                  OR l.tenlop LIKE :search";
+    }
 
-        if (!empty($search)) {
-            $stmt->bindParam(':search', $searchValue);
-        }
+    $query = "
+        SELECT sv.*, l.tenlop
+        FROM tbl_sinhviens sv
+        LEFT JOIN tbl_lops l ON sv.malop = l.malop
+        $where
+        ORDER BY $orderBy $dir
+        LIMIT :limit OFFSET :offset
+    ";
 
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
+    $stmt = $this->conn->prepare($query);
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!empty($search)) {
+        $stmt->bindParam(':search', $searchValue);
+    }
 
-        $countQuery = "
-            SELECT COUNT(*)
-            FROM tbl_sinhviens sv
-            LEFT JOIN tbl_lops l ON sv.malop = l.malop
-            $where
-        ";
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
 
-        $countStmt = $this->conn->prepare($countQuery);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if (!empty($search)) {
-            $countStmt->bindParam(':search', $searchValue);
-        }
+    $countQuery = "
+        SELECT COUNT(*)
+        FROM tbl_sinhviens sv
+        LEFT JOIN tbl_lops l ON sv.malop = l.malop
+        $where
+    ";
 
-        $countStmt->execute();
-        $totalRecord = $countStmt->fetchColumn();
+    $countStmt = $this->conn->prepare($countQuery);
 
-        $totalPage = ceil($totalRecord / $limit);
+    if (!empty($search)) {
+        $countStmt->bindParam(':search', $searchValue);
+    }
 
-        return ["sinhviens" => $result, "totalpage" => $totalPage];
+    $countStmt->execute();
+    $totalRecord = $countStmt->fetchColumn();
+
+        return [
+            "sinhviens" => $result,
+            "totalpage" => ceil($totalRecord / $limit)
+        ];
     }
     
     public function getById($id){

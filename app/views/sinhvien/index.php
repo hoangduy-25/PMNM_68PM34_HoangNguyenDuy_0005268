@@ -9,18 +9,26 @@
     </div>
 
     <form class="mb-4" action="/sinhvien/index/5/0" method="get">
-                <div class="input-group">
-                    <input
-                        class="form-control"
-                        type="text"
-                        name="search"
-                        placeholder="Tìm theo họ tên, MSSV, mã lớp hoặc tên lớp..."
-                        value="<?php echo htmlspecialchars($search ?? ''); ?>"
-                    >
-                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-                    <a class="btn btn-outline-secondary" href="/sinhvien/index/">Làm mới</a>
-                </div>
-            </form>
+        <div class="input-group">
+            <input class="form-control" type="text" name="search"
+                placeholder="Tìm theo họ tên, MSSV, mã lớp hoặc tên lớp..."
+                value="<?php echo htmlspecialchars($search ?? ''); ?>">
+
+            <select class="form-select" name="sort" style="max-width: 170px;">
+                <option value="id" <?php echo ($sort ?? '') === 'id' ? 'selected' : ''; ?>>Sắp xếp mặc định</option>
+                <option value="mssv" <?php echo ($sort ?? '') === 'mssv' ? 'selected' : ''; ?>>Theo MSSV</option>
+                <option value="hoten" <?php echo ($sort ?? '') === 'hoten' ? 'selected' : ''; ?>>Theo họ tên</option>
+            </select>
+
+            <select class="form-select" name="dir" style="max-width: 120px;">
+                <option value="ASC" <?php echo ($dir ?? '') === 'ASC' ? 'selected' : ''; ?>>Tăng dần</option>
+                <option value="DESC" <?php echo ($dir ?? '') === 'DESC' ? 'selected' : ''; ?>>Giảm dần</option>
+            </select>
+
+            <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+            <a class="btn btn-outline-secondary" href="/sinhvien/index/">Làm mới</a>
+        </div>
+    </form>
 
     <div class="soft-card table-card">
         <div class="table-responsive">
@@ -77,7 +85,7 @@
                 $activeClass = ($i == $currentPage) ? 'active' : '';
             ?>
                 <li class="page-item <?php echo $activeClass; ?>">
-                    <a class="page-link" href="/sinhvien/index/<?php echo $pageSize; ?>/<?php echo $pageOffset; ?>">
+                    <a class="page-link" href="/sinhvien/index/<?php echo $pageSize; ?>/<?php echo $pageOffset; ?>?search=<?php echo urlencode($search ?? ''); ?>&sort=<?php echo urlencode($sort ?? 'id'); ?>&dir=<?php echo urlencode($dir ?? 'ASC'); ?>">
                         <?php echo $i; ?>
                     </a>
                 </li>

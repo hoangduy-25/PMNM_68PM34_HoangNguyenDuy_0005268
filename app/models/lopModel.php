@@ -25,42 +25,51 @@ class LopModel{
         }
     }
 
-    public function paging($limit = 5, $offset = 0, $search = ""){
-        $where = "";
-        $searchValue = "%" . $search . "%";
+    public function paging($limit = 5, $offset = 0, $search = "", $sort = "id", $dir = "ASC"){
+    $where = "";
+    $searchValue = "%" . $search . "%";
 
-        if (!empty($search)) {
-            $where = "WHERE malop LIKE :search
-                    OR tenlop LIKE :search
-                    OR ghichu LIKE :search";
-        }
+    $allowedSort = [
+        "id" => "id",
+        "malop" => "malop",
+        "tenlop" => "tenlop"
+    ];
 
-        $query = "SELECT * FROM tbl_lops $where LIMIT :limit OFFSET :offset";
-        $stmt = $this->conn->prepare($query);
+    $orderBy = $allowedSort[$sort] ?? "id";
+    $dir = strtoupper($dir) === "DESC" ? "DESC" : "ASC";
 
-        if (!empty($search)) {
-            $stmt->bindParam(':search', $searchValue);
-        }
+    if (!empty($search)) {
+        $where = "WHERE malop LIKE :search 
+                  OR tenlop LIKE :search 
+                  OR ghichu LIKE :search";
+    }
 
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $query = "SELECT * FROM tbl_lops $where ORDER BY $orderBy $dir LIMIT :limit OFFSET :offset";
+    $stmt = $this->conn->prepare($query);
 
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!empty($search)) {
+        $stmt->bindParam(':search', $searchValue);
+    }
 
-        $countQuery = "SELECT COUNT(*) FROM tbl_lops $where";
-        $countStmt = $this->conn->prepare($countQuery);
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
 
-        if (!empty($search)) {
-            $countStmt->bindParam(':search', $searchValue);
-        }
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $countStmt->execute();
-        $totalRecord = $countStmt->fetchColumn();
+    $countStmt = $this->conn->prepare("SELECT COUNT(*) FROM tbl_lops $where");
 
-        $totalPage = ceil($totalRecord / $limit);
+    if (!empty($search)) {
+        $countStmt->bindParam(':search', $searchValue);
+    }
 
-        return ["lops" => $result, "totalpage" => $totalPage];
+    $countStmt->execute();
+    $totalRecord = $countStmt->fetchColumn();
+
+        return [
+            "lops" => $result,
+            "totalpage" => ceil($totalRecord / $limit)
+        ];
     }
 
     public function getById($id){

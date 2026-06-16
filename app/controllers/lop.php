@@ -3,31 +3,46 @@ require_once '../app/core/controller.php';
 class lop extends Controller{
 
     public function index($limit = 5, $offset = 0, $search = ""){
-        $limit = (int)$limit;
-        $offset = (int)$offset;
         $search = trim($_GET['search'] ?? $search);
         $sort = $_GET['sort'] ?? 'id';
         $dir = $_GET['dir'] ?? 'ASC';
 
-        if ($limit <= 0) $limit = 5;
-        if ($offset < 0) $offset = 0;
+        $pageSize = (int)($_GET['pageSize'] ?? $limit);
+        $allowedPageSizes = [5, 10, 20, 50];
+
+        if (!in_array($pageSize, $allowedPageSizes)) {
+            $pageSize = 5;
+        }
+
+        $limit = $pageSize;
+        $offset = (int)$offset;
+
+        if ($offset < 0) {
+            $offset = 0;
+        }
 
         $lopModel = $this->model('lopModel');
         $result = $lopModel->paging($limit, $offset, $search, $sort, $dir);
 
+        $lops = $result['lops'];
+        $totalpage = $result['totalpage'];
+        $currentPage = floor($offset / $limit) + 1;
+
         $this->view('layout/masterlayout', [
             'viewname' => 'lop/index',
-            'lops' => $result['lops'],
+            'lops' => $lops,
             'title' => 'Danh sách lớp',
-            'totalpage' => $result['totalpage'],
+            'totalpage' => $totalpage,
             'limit' => $limit,
             'offset' => $offset,
-            'currentPage' => floor($offset / $limit) + 1,
+            'currentPage' => $currentPage,
             'search' => $search,
             'sort' => $sort,
-            'dir' => $dir
+            'dir' => $dir,
+            'pageSize' => $pageSize
         ]);
     }
+
     public function create(){
         $this->view('lop/create');
     }

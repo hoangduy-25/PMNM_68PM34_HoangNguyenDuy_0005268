@@ -8,25 +8,47 @@
         </div>
     </div>
 
-    <form class="mb-4" action="/sinhvien/index/5/0" method="get">
-        <div class="input-group">
-            <input class="form-control" type="text" name="search"
-                placeholder="Tìm theo họ tên, MSSV, mã lớp hoặc tên lớp..."
-                value="<?php echo htmlspecialchars($search ?? ''); ?>">
+    <form class="mb-4" action="/sinhvien/index/<?php echo htmlspecialchars($pageSize ?? 5); ?>/0" method="get">
+        <div class="row g-2">
+            <div class="col-md-5">
+                <input
+                    class="form-control"
+                    type="text"
+                    name="search"
+                    placeholder="Tìm theo họ tên, MSSV, mã lớp hoặc tên lớp..."
+                    value="<?php echo htmlspecialchars($search ?? ''); ?>"
+                >
+            </div>
 
-            <select class="form-select" name="sort" style="max-width: 170px;">
-                <option value="id" <?php echo ($sort ?? '') === 'id' ? 'selected' : ''; ?>>Sắp xếp mặc định</option>
-                <option value="mssv" <?php echo ($sort ?? '') === 'mssv' ? 'selected' : ''; ?>>Theo MSSV</option>
-                <option value="hoten" <?php echo ($sort ?? '') === 'hoten' ? 'selected' : ''; ?>>Theo họ tên</option>
-            </select>
+            <div class="col-md-2">
+                <select class="form-select" name="sort">
+                    <option value="id" <?php echo ($sort ?? 'id') === 'id' ? 'selected' : ''; ?>>Sắp xếp mặc định</option>
+                    <option value="mssv" <?php echo ($sort ?? '') === 'mssv' ? 'selected' : ''; ?>>MSSV</option>
+                    <option value="hoten" <?php echo ($sort ?? '') === 'hoten' ? 'selected' : ''; ?>>Họ tên</option>
+                </select>
+            </div>
 
-            <select class="form-select" name="dir" style="max-width: 120px;">
-                <option value="ASC" <?php echo ($dir ?? '') === 'ASC' ? 'selected' : ''; ?>>Tăng dần</option>
-                <option value="DESC" <?php echo ($dir ?? '') === 'DESC' ? 'selected' : ''; ?>>Giảm dần</option>
-            </select>
+            <div class="col-md-2">
+                <select class="form-select" name="dir">
+                    <option value="ASC" <?php echo ($dir ?? 'ASC') === 'ASC' ? 'selected' : ''; ?>>Tăng dần</option>
+                    <option value="DESC" <?php echo ($dir ?? '') === 'DESC' ? 'selected' : ''; ?>>Giảm dần</option>
+                </select>
+            </div>
 
-            <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-            <a class="btn btn-outline-secondary" href="/sinhvien/index/">Làm mới</a>
+            <div class="col-md-1">
+                <select class="form-select" name="pageSize">
+                    <?php foreach ([5, 10, 20, 50] as $size): ?>
+                        <option value="<?php echo $size; ?>" <?php echo ($pageSize ?? 5) == $size ? 'selected' : ''; ?>>
+                            <?php echo $size; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button class="btn btn-primary flex-fill" type="submit">Lọc</button>
+                <a class="btn btn-outline-secondary" href="/sinhvien/index/">Reset</a>
+            </div>
         </div>
     </form>
 
@@ -85,7 +107,7 @@
                 $activeClass = ($i == $currentPage) ? 'active' : '';
             ?>
                 <li class="page-item <?php echo $activeClass; ?>">
-                    <a class="page-link" href="/sinhvien/index/<?php echo $pageSize; ?>/<?php echo $pageOffset; ?>?search=<?php echo urlencode($search ?? ''); ?>&sort=<?php echo urlencode($sort ?? 'id'); ?>&dir=<?php echo urlencode($dir ?? 'ASC'); ?>">
+                    <a class="page-link" href="/sinhvien/index/<?php echo $pageSize; ?>/<?php echo $pageOffset; ?>?search=<?php echo urlencode($search ?? ''); ?>&sort=<?php echo urlencode($sort ?? 'id'); ?>&dir=<?php echo urlencode($dir ?? 'ASC'); ?>&pageSize=<?php echo urlencode($pageSize); ?>">
                         <?php echo $i; ?>
                     </a>
                 </li>

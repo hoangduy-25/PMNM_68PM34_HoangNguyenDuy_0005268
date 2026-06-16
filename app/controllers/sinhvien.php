@@ -3,34 +3,53 @@ require_once '../app/core/controller.php';
 class sinhvien extends Controller{
 
     public function index($limit = 5, $offset = 0, $search = ""){
-        $limit = (int)$limit;
-        $offset = (int)$offset;
         $search = trim($_GET['search'] ?? $search);
         $sort = $_GET['sort'] ?? 'id';
         $dir = $_GET['dir'] ?? 'ASC';
 
-        if ($limit <= 0) $limit = 5;
-        if ($offset < 0) $offset = 0;
+        $pageSize = (int)($_GET['pageSize'] ?? $limit);
+        $allowedPageSizes = [5, 10, 20, 50];
+
+        if (!in_array($pageSize, $allowedPageSizes)) {
+            $pageSize = 5;
+        }
+
+        $limit = $pageSize;
+        $offset = (int)$offset;
+
+        if ($offset < 0) {
+            $offset = 0;
+        }
 
         $sinhvienModel = $this->model('sinhvienModel');
         $result = $sinhvienModel->paging($limit, $offset, $search, $sort, $dir);
 
+        $sinhviens = $result['sinhviens'];
+        $totalpage = $result['totalpage'];
+        $currentPage = floor($offset / $limit) + 1;
+
         $this->view('layout/masterlayout', [
             'viewname' => 'sinhvien/index',
-            'sinhviens' => $result['sinhviens'],
+            'sinhviens' => $sinhviens,
             'title' => 'Danh sách sinh viên',
-            'totalpage' => $result['totalpage'],
+            'totalpage' => $totalpage,
             'limit' => $limit,
             'offset' => $offset,
-            'currentPage' => floor($offset / $limit) + 1,
+            'currentPage' => $currentPage,
             'search' => $search,
             'sort' => $sort,
-            'dir' => $dir
+            'dir' => $dir,
+            'pageSize' => $pageSize
         ]);
     }
     
     public function create(){
-        $this->view('sinhvien/create');
+        $lopModel = $this->model('lopModel');
+        $lops = $lopModel->getAllLop();
+
+        $this->view('sinhvien/create', [
+            'lops' => $lops
+        ]);
     }
 
     public function store(){
@@ -52,7 +71,14 @@ class sinhvien extends Controller{
     public function edit($id){
         $sinhvienModel = $this->model('sinhvienModel');
         $sinhvien = $sinhvienModel->getById($id);
-        $this->view('sinhvien/edit', ['sinhvien' => $sinhvien]);
+
+        $lopModel = $this->model('lopModel');
+        $lops = $lopModel->getAllLop();
+
+        $this->view('sinhvien/edit', [
+            'sinhvien' => $sinhvien,
+            'lops' => $lops
+        ]);
     }
 
     public function update($id){

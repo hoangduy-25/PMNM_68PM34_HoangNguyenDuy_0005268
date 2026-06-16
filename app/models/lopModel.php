@@ -105,5 +105,12 @@ class LopModel{
         }
     }
     
+    public function getAllLop(){
+        $query = "SELECT malop, tenlop FROM tbl_lops ORDER BY malop ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
 }
 ?>

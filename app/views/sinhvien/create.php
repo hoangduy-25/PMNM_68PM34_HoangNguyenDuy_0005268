@@ -38,17 +38,20 @@
                         <input class="form-control" type="text" name="mssv" id="mssv" placeholder="Ví dụ: 0005268" required>
                     </div>
 
-                    <select class="form-select" name="malop" id="malop" required>
-                        <option value="">Chọn lớp</option>
+                    <div class="mb-4">
+                        <label class="form-label" for="malop">Lớp</label>
+                        <select class="form-select" name="malop" id="malop" required>
+                            <option value="">Chọn lớp</option>
 
-                        <?php if (!empty($lops)): ?>
-                            <?php foreach ($lops as $lop): ?>
-                                <option value="<?php echo htmlspecialchars($lop['malop']); ?>">
-                                    <?php echo htmlspecialchars($lop['malop'] . ' - ' . $lop['tenlop']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
+                            <?php if (!empty($lops)): ?>
+                                <?php foreach ($lops as $lop): ?>
+                                    <option value="<?php echo htmlspecialchars($lop['malop']); ?>">
+                                        <?php echo htmlspecialchars($lop['malop'] . ' - ' . $lop['tenlop']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
 
                     <br>
 
